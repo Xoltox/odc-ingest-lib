@@ -2,17 +2,17 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using RFPIngestLib.Extractors;
-using RFPIngestLib.Interfaces;
-using RFPIngestLib.Storage;
-using RFPIngestLib.Structures;
+using OdcIngest.Extractors;
+using OdcIngest.Interfaces;
+using OdcIngest.Storage;
+using OdcIngest.Structures;
 
-[assembly: InternalsVisibleTo("RFPIngestLib.UnitTests")]
-[assembly: InternalsVisibleTo("RFPIngestLib.IntegrationTests")]
+[assembly: InternalsVisibleTo("OdcIngestLib.UnitTests")]
+[assembly: InternalsVisibleTo("OdcIngestLib.IntegrationTests")]
 
-namespace RFPIngestLib.Implementations
+namespace OdcIngest.Implementations
 {
-    public class RFPIngestLibImpl : IRFPIngestLib
+    public class OdcIngestLibImpl : IOdcIngestLib
     {
         /// <summary>Total JSON-escaped bytes of all Markdown returned by one call.</summary>
         public const int MaxOutputBytes = 4_000_000;
@@ -26,13 +26,13 @@ namespace RFPIngestLib.Implementations
         private readonly ILogger _logger;
         private readonly Func<StorageConnection, IObjectSource> _sourceFactory;
 
-        public RFPIngestLibImpl(ILogger logger)
+        public OdcIngestLibImpl(ILogger logger)
         {
             _logger = logger;
             _sourceFactory = c => new S3ObjectSource(c, logger);
         }
 
-        internal RFPIngestLibImpl(ILogger logger, Func<StorageConnection, IObjectSource> sourceFactory)
+        internal OdcIngestLibImpl(ILogger logger, Func<StorageConnection, IObjectSource> sourceFactory)
         {
             _logger = logger;
             _sourceFactory = sourceFactory;
@@ -73,7 +73,7 @@ namespace RFPIngestLib.Implementations
                 var path = _sourceFactory(connection).GetLocalPath(objectKey);
                 int count;
                 using (var session = FormatDetector.CreateExtractor(path).Open(path, ctx)) count = session.PageCount;
-                _logger.LogInformation("RFPIngest: GetPageCount key={ObjectKey} pages={Pages} elapsedMs={ElapsedMs}", objectKey, count, sw.ElapsedMilliseconds);
+                _logger.LogInformation("OdcIngest: GetPageCount key={ObjectKey} pages={Pages} elapsedMs={ElapsedMs}", objectKey, count, sw.ElapsedMilliseconds);
                 return count;
             });
         }
@@ -88,8 +88,8 @@ namespace RFPIngestLib.Implementations
                 using var session = FormatDetector.CreateExtractor(path).Open(path, ctx);
                 int count = session.PageCount;
 
-                if (fromPage < 1 || fromPage > count) throw new InvalidOperationException("RFPIngest: page out of range");
-                if (toPage < fromPage) throw new InvalidOperationException("RFPIngest: page out of range");
+                if (fromPage < 1 || fromPage > count) throw new InvalidOperationException("OdcIngest: page out of range");
+                if (toPage < fromPage) throw new InvalidOperationException("OdcIngest: page out of range");
                 int last = Math.Min(Math.Min(toPage, fromPage + MaxPagesPerCall - 1), count);
 
                 var result = new List<PageRecord>();
@@ -108,7 +108,7 @@ namespace RFPIngestLib.Implementations
                     }
                 }
                 _logger.LogInformation(
-                    "RFPIngest: ExtractPages key={ObjectKey} from={From} to={To} returned={Returned} bytes={Bytes} elapsedMs={ElapsedMs}",
+                    "OdcIngest: ExtractPages key={ObjectKey} from={From} to={To} returned={Returned} bytes={Bytes} elapsedMs={ElapsedMs}",
                     objectKey, fromPage, last, result.Count, total, sw.ElapsedMilliseconds);
                 return (IEnumerable<PageRecord>)result;
             });
@@ -121,9 +121,9 @@ namespace RFPIngestLib.Implementations
             {
                 var ctx = NewContext();
                 var path = _sourceFactory(connection).GetLocalPath(objectKey);
-                if (FormatDetector.Detect(path) != DocFormat.Xlsx) throw new InvalidOperationException("RFPIngest: not a workbook");
+                if (FormatDetector.Detect(path) != DocFormat.Xlsx) throw new InvalidOperationException("OdcIngest: not a workbook");
                 if (fromRow < 1) fromRow = 1;
-                if (toRow < fromRow) throw new InvalidOperationException("RFPIngest: row out of range");
+                if (toRow < fromRow) throw new InvalidOperationException("OdcIngest: row out of range");
 
                 var result = new List<QuestionnaireRow>();
                 long total = 0;
@@ -136,7 +136,7 @@ namespace RFPIngestLib.Implementations
                     if (sw.Elapsed >= TimeBudget) break;
                 }
                 _logger.LogInformation(
-                    "RFPIngest: ExtractQuestionnaireRows key={ObjectKey} rows={Rows} bytes={Bytes} elapsedMs={ElapsedMs}",
+                    "OdcIngest: ExtractQuestionnaireRows key={ObjectKey} rows={Rows} bytes={Bytes} elapsedMs={ElapsedMs}",
                     objectKey, result.Count, total, sw.ElapsedMilliseconds);
                 return (IEnumerable<QuestionnaireRow>)result;
             });
@@ -160,21 +160,21 @@ namespace RFPIngestLib.Implementations
             return page;
         }
 
-        /// <summary>Wraps format-library failures as RFPIngest: errors that never carry document text.</summary>
+        /// <summary>Wraps format-library failures as OdcIngest: errors that never carry document text.</summary>
         private T Guarded<T>(Func<T> work)
         {
             try
             {
                 return work();
             }
-            catch (InvalidOperationException ex) when (ex.Message.StartsWith("RFPIngest:", StringComparison.Ordinal))
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("OdcIngest:", StringComparison.Ordinal))
             {
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError("RFPIngest: failure type={ExceptionType}", ex.GetType().Name);
-                throw new InvalidOperationException("RFPIngest: could not read document (" + ex.GetType().Name + ")");
+                _logger.LogError("OdcIngest: failure type={ExceptionType}", ex.GetType().Name);
+                throw new InvalidOperationException("OdcIngest: could not read document (" + ex.GetType().Name + ")");
             }
         }
     }

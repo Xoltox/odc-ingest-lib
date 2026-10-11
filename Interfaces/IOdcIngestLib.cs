@@ -1,13 +1,13 @@
 using OutSystems.ExternalLibraries.SDK;
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.Interfaces
+namespace OdcIngest.Interfaces
 {
     [OSInterface(
-        Name = "RFPIngestLib",
+        Name = "OdcIngestLib",
         Description = "Document ingestion library v1: page-text extraction",
-        IconResourceName = "RFPIngestLib.Resources.icon.png")]
-    public interface IRFPIngestLib
+        IconResourceName = "OdcIngest.Resources.icon.png")]
+    public interface IOdcIngestLib
     {
         [OSAction(Description = "Number of pages (PDF page, DOCX logical page, XLSX visible sheet) of a document in the bucket.", ReturnName = "PageCount")]
         int GetPageCount(

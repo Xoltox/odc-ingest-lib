@@ -5,11 +5,11 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using OutSystems.ExternalLibraries.SDK;
-using RFPIngestLib.Implementations;
-using RFPIngestLib.Interfaces;
-using RFPIngestLib.Structures;
+using OdcIngest.Implementations;
+using OdcIngest.Interfaces;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.UnitTests
+namespace OdcIngest.UnitTests
 {
     public class GeneratedTests
     {
@@ -37,7 +37,7 @@ namespace RFPIngestLib.UnitTests
                 if (expect == "throw")
                 {
                     var ex = Assert.Throws<InvalidOperationException>(() => lib.ExtractPages(Fixtures.Conn, path, from, to));
-                    Assert.Equal("RFPIngest: page out of range", ex.Message);
+                    Assert.Equal("OdcIngest: page out of range", ex.Message);
                     return;
                 }
                 var pages = lib.ExtractPages(Fixtures.Conn, path, from, to).ToList();
@@ -210,7 +210,7 @@ namespace RFPIngestLib.UnitTests
             try
             {
                 var ex = Assert.Throws<InvalidOperationException>(() => Fixtures.NewLib().GetPageCount(Fixtures.Conn, txt));
-                Assert.Equal("RFPIngest: unsupported format", ex.Message);
+                Assert.Equal("OdcIngest: unsupported format", ex.Message);
             }
             finally { File.Delete(txt); }
         }
@@ -219,7 +219,7 @@ namespace RFPIngestLib.UnitTests
         [Fact]
         public void Test10_InterfaceUsesOnlySupportedOdcTypes()
         {
-            var iface = typeof(IRFPIngestLib);
+            var iface = typeof(IOdcIngestLib);
             Assert.NotNull(iface.GetCustomAttribute<OSInterfaceAttribute>());
             var simple = new HashSet<Type> { typeof(string), typeof(int), typeof(long), typeof(bool), typeof(DateTime), typeof(decimal), typeof(float), typeof(double) };
 
@@ -261,7 +261,7 @@ namespace RFPIngestLib.UnitTests
         public void LimitPage_TruncatesOversizedPage()
         {
             var big = new PageRecord { PageNumber = 1, Markdown = new string('x', 4_100_000), HasTextLayer = true, CharCount = 4_100_000 };
-            var r = RFPIngestLibImpl.LimitPage(big);
+            var r = OdcIngestLibImpl.LimitPage(big);
             Assert.EndsWith("\n[truncated]", r.Markdown);
             Assert.True(Encoding.UTF8.GetByteCount(r.Markdown) <= 3_900_020);
         }
@@ -276,16 +276,16 @@ namespace RFPIngestLib.UnitTests
                 lib.TimeBudget = TimeSpan.Zero;
                 var pages = lib.ExtractPages(Fixtures.Conn, path, 1, 10).ToList();
                 Assert.Single(pages);
-                Assert.Equal(70, RFPIngestLibImpl.TimeBudgetSeconds);
+                Assert.Equal(70, OdcIngestLibImpl.TimeBudgetSeconds);
             }
             finally { File.Delete(path); }
         }
 
         [Fact]
-        public void MissingObject_ThrowsRfpIngestError()
+        public void MissingObject_ThrowsOdcIngestError()
         {
             var ex = Assert.Throws<InvalidOperationException>(() => Fixtures.NewLib().GetPageCount(Fixtures.Conn, Path.Combine(Path.GetTempPath(), "does-not-exist.pdf")));
-            Assert.StartsWith("RFPIngest:", ex.Message);
+            Assert.StartsWith("OdcIngest:", ex.Message);
         }
     }
 }

@@ -1,6 +1,6 @@
 using OutSystems.ExternalLibraries.SDK;
 
-namespace RFPIngestLib.Structures
+namespace OdcIngest.Structures
 {
     [OSStructure(Description = "One questionnaire row from an XLSX sheet.")]
     public struct QuestionnaireRow

@@ -1,7 +1,7 @@
-using RFPIngestLib.Storage;
-using RFPIngestLib.Structures;
+using OdcIngest.Storage;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.UnitTests
+namespace OdcIngest.UnitTests
 {
     public class UrlTests
     {
@@ -17,7 +17,7 @@ namespace RFPIngestLib.UnitTests
         {
             var c = new StorageConnection { ServiceUrl = url, AllowInsecureHttp = allowInsecure };
             if (ok) S3ObjectSource.ValidateUrl(c);
-            else Assert.StartsWith("RFPIngest:", Assert.Throws<InvalidOperationException>(() => S3ObjectSource.ValidateUrl(c)).Message);
+            else Assert.StartsWith("OdcIngest:", Assert.Throws<InvalidOperationException>(() => S3ObjectSource.ValidateUrl(c)).Message);
         }
     }
 }

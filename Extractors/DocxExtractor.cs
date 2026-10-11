@@ -2,9 +2,9 @@ using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.Extractors
+namespace OdcIngest.Extractors
 {
     /// <summary>
     /// Body content only: headers, footers, footnotes and endnotes are NOT extracted (documented exclusion).

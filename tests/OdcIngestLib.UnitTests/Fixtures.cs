@@ -1,15 +1,15 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using RFPIngestLib.Implementations;
-using RFPIngestLib.Storage;
-using RFPIngestLib.Structures;
+using OdcIngest.Implementations;
+using OdcIngest.Storage;
+using OdcIngest.Structures;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Fonts.Standard14Fonts;
 using UglyToad.PdfPig.Core;
 using UglyToad.PdfPig.Writer;
 
-namespace RFPIngestLib.UnitTests
+namespace OdcIngest.UnitTests
 {
     public sealed record KeyEntry(string Ref, string SourceDoc, int? Page, string Location, string? ChangeType, string Text);
 
@@ -69,13 +69,13 @@ namespace RFPIngestLib.UnitTests
             return list;
         }
 
-        public static RFPIngestLibImpl NewLib(ILogger? logger = null) =>
+        public static OdcIngestLibImpl NewLib(ILogger? logger = null) =>
             new(logger ?? new ListLogger(), _ => new FileObjectSource());
 
         public static StorageConnection Conn => default;
 
         /// <summary>Whole-document batched extraction following the caller loop from the spec.</summary>
-        public static List<PageRecord> ExtractAll(RFPIngestLibImpl lib, string path)
+        public static List<PageRecord> ExtractAll(OdcIngestLibImpl lib, string path)
         {
             int count = lib.GetPageCount(Conn, path);
             var all = new List<PageRecord>();
@@ -95,7 +95,7 @@ namespace RFPIngestLib.UnitTests
 
         // ---- generated PDFs ----
 
-        public static string TempFile(string ext) => Path.Combine(Path.GetTempPath(), "rfping-ut-" + Guid.NewGuid().ToString("N") + ext);
+        public static string TempFile(string ext) => Path.Combine(Path.GetTempPath(), "odcing-ut-" + Guid.NewGuid().ToString("N") + ext);
 
         public static string MakePdf(int pages, Func<int, IEnumerable<string>> linesOfPage, double fontSize = 10, double lineStep = 12)
         {

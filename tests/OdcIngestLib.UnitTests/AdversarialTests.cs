@@ -4,12 +4,12 @@ using System.Text.Json;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using RFPIngestLib.Extractors;
-using RFPIngestLib.Implementations;
-using RFPIngestLib.Storage;
-using RFPIngestLib.Structures;
+using OdcIngest.Extractors;
+using OdcIngest.Implementations;
+using OdcIngest.Storage;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.UnitTests
+namespace OdcIngest.UnitTests
 {
     /// <summary>All fixtures are generated in-test and deleted afterwards; nothing large is committed.</summary>
     public class AdversarialTests
@@ -17,7 +17,7 @@ namespace RFPIngestLib.UnitTests
         private static InvalidOperationException Fails(Action a)
         {
             var ex = Assert.Throws<InvalidOperationException>(a);
-            Assert.StartsWith("RFPIngest:", ex.Message);
+            Assert.StartsWith("OdcIngest:", ex.Message);
             return ex;
         }
 
@@ -198,7 +198,7 @@ namespace RFPIngestLib.UnitTests
                 var lib = Fixtures.NewLib();
                 var pages = lib.ExtractPages(Fixtures.Conn, path, 1, 20).ToList();
                 Assert.InRange(pages.Count, 1, 7);
-                Assert.True(pages.Sum(x => RFPIngestLibImpl.EscapedBytes(x.Markdown)) <= 4_000_000);
+                Assert.True(pages.Sum(x => OdcIngestLibImpl.EscapedBytes(x.Markdown)) <= 4_000_000);
                 var json = JsonSerializer.Serialize(pages);
                 Assert.True(json.Length < 5_500_000, "json " + json.Length);
             }
@@ -210,8 +210,8 @@ namespace RFPIngestLib.UnitTests
         {
             // one line of 6 MB of text must not be rendered in full
             var big = new PageRecord { PageNumber = 1, Markdown = new string('é', 1_000_000), HasTextLayer = true };
-            var r = RFPIngestLibImpl.LimitPage(big);
-            Assert.True(RFPIngestLibImpl.EscapedBytes(r.Markdown) <= 3_900_020);
+            var r = OdcIngestLibImpl.LimitPage(big);
+            Assert.True(OdcIngestLibImpl.EscapedBytes(r.Markdown) <= 3_900_020);
             Assert.Equal(3_900_000 / 6, r.Markdown.Length - "\n[truncated]".Length);
         }
 
@@ -281,11 +281,11 @@ namespace RFPIngestLib.UnitTests
         public void LicencePin_RangeAndLockFiles()
         {
             var lib = Fixtures.RepoRoot;
-            Assert.Contains("SixLabors.Fonts\" Version=\"[1.0.0,2.0.0)\"", File.ReadAllText(Path.Combine(lib, "RFPIngestLib.csproj")));
+            Assert.Contains("SixLabors.Fonts\" Version=\"[1.0.0,2.0.0)\"", File.ReadAllText(Path.Combine(lib, "OdcIngestLib.csproj")));
             var props = File.ReadAllText(Path.Combine(lib, "Directory.Build.props"));
             Assert.Contains("RestorePackagesWithLockFile>true", props);
             Assert.Contains("RestoreLockedMode", props);
-            foreach (var rel in new[] { "packages.lock.json", "tests/RFPIngestLib.UnitTests/packages.lock.json", "tests/RFPIngestLib.IntegrationTests/packages.lock.json" })
+            foreach (var rel in new[] { "packages.lock.json", "tests/OdcIngestLib.UnitTests/packages.lock.json", "tests/OdcIngestLib.IntegrationTests/packages.lock.json" })
                 Assert.True(File.Exists(Path.Combine(lib, rel)), rel);
             using var doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(lib, "packages.lock.json")));
             var fonts = doc.RootElement.GetProperty("dependencies").EnumerateObject().First().Value.GetProperty("SixLabors.Fonts");
@@ -300,7 +300,7 @@ namespace RFPIngestLib.UnitTests
             var dst = new MemoryStream();
             Assert.Equal(400, S3ObjectSource.CopyLimited(new MemoryStream(new byte[400]), dst, 500));
             var ex = Assert.Throws<InvalidOperationException>(() => S3ObjectSource.CopyLimited(new MemoryStream(new byte[600]), new MemoryStream(), 500));
-            Assert.Equal("RFPIngest: object too large", ex.Message);
+            Assert.Equal("OdcIngest: object too large", ex.Message);
         }
 
         // ---- 8. PDF open once, encrypted, corrupt ----
@@ -385,7 +385,7 @@ namespace RFPIngestLib.UnitTests
             {
                 string text;
                 try { text = string.Join("\n", Fixtures.NewLib().ExtractPages(Fixtures.Conn, p, 1, 1).Select(x => x.Markdown)); }
-                catch (InvalidOperationException ex) { Assert.StartsWith("RFPIngest:", ex.Message); Assert.DoesNotContain("XXE_SECRET_MARKER", ex.Message); return; }
+                catch (InvalidOperationException ex) { Assert.StartsWith("OdcIngest:", ex.Message); Assert.DoesNotContain("XXE_SECRET_MARKER", ex.Message); return; }
                 Assert.DoesNotContain("XXE_SECRET_MARKER", text);
             }
             finally { File.Delete(p); File.Delete(secret); }

@@ -1,9 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using ClosedXML.Excel;
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.Extractors
+namespace OdcIngest.Extractors
 {
     /// <summary>
     /// Sparse-grid XLSX reader. Only cells that hold content are read (the declared used range is never iterated),
@@ -200,12 +200,12 @@ namespace RFPIngestLib.Extractors
             if (!string.IsNullOrWhiteSpace(sheetName))
             {
                 var match = sheets.Where(s => string.Equals(s.Name, sheetName, StringComparison.OrdinalIgnoreCase)).ToList();
-                if (match.Count == 0) throw new InvalidOperationException("RFPIngest: sheet not found");
+                if (match.Count == 0) throw new InvalidOperationException("OdcIngest: sheet not found");
                 sheets = match;
             }
             else if (sheets.Count > 1)
             {
-                throw new InvalidOperationException("RFPIngest: E_SHEET_REQUIRED workbook has " + sheets.Count + " visible sheets; pass sheetName");
+                throw new InvalidOperationException("OdcIngest: E_SHEET_REQUIRED workbook has " + sheets.Count + " visible sheets; pass sheetName");
             }
             foreach (var ws in sheets)
                 foreach (var row in SheetRows(ws, fromRow, toRow, ctx))

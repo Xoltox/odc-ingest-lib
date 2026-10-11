@@ -1,7 +1,7 @@
 using System.IO.Compression;
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.Extractors
+namespace OdcIngest.Extractors
 {
     public enum DocFormat { Pdf, Docx, Xlsx }
 
@@ -36,7 +36,7 @@ namespace RFPIngestLib.Extractors
                 }
                 catch (InvalidDataException)
                 {
-                    throw new InvalidOperationException("RFPIngest: unsupported format");
+                    throw new InvalidOperationException("OdcIngest: unsupported format");
                 }
                 if (hasDoc && hasBook)
                 {
@@ -46,7 +46,7 @@ namespace RFPIngestLib.Extractors
                 if (hasDoc) return DocFormat.Docx;
                 if (hasBook) return DocFormat.Xlsx;
             }
-            throw new InvalidOperationException("RFPIngest: unsupported format");
+            throw new InvalidOperationException("OdcIngest: unsupported format");
         }
 
         /// <summary>Rejects zip bombs from the declared entry sizes before any part is opened.</summary>
@@ -56,14 +56,14 @@ namespace RFPIngestLib.Extractors
             foreach (var e in zip.Entries)
             {
                 if (e.Length > MaxEntryUncompressed)
-                    throw new InvalidOperationException("RFPIngest: E_ZIP_BOMB entry over 100MB uncompressed");
+                    throw new InvalidOperationException("OdcIngest: E_ZIP_BOMB entry over 100MB uncompressed");
                 total += e.Length;
                 compressed += e.CompressedLength;
                 if (total > MaxTotalUncompressed)
-                    throw new InvalidOperationException("RFPIngest: E_ZIP_BOMB total over 200MB uncompressed");
+                    throw new InvalidOperationException("OdcIngest: E_ZIP_BOMB total over 200MB uncompressed");
             }
             if (total > RatioFloorBytes && total > MaxRatio * Math.Max(compressed, 1))
-                throw new InvalidOperationException("RFPIngest: E_ZIP_BOMB compression ratio over 100:1");
+                throw new InvalidOperationException("OdcIngest: E_ZIP_BOMB compression ratio over 100:1");
         }
 
         public static IDocumentExtractor CreateExtractor(string path) => Detect(path) switch

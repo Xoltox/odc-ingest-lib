@@ -3,5 +3,10 @@
     <!-- Licence pin: packages.lock.json files are committed; locked restore applies in CI or when requested with -p:RestoreLockedMode=true -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true' Or '$(CI)' == 'true'">true</RestoreLockedMode>
+    <!-- Reproducible build: no machine paths in the DLL or PDB -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PathMap>$(MSBuildThisFileDirectory)=/src/</PathMap>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 </Project>

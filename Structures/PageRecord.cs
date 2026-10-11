@@ -1,6 +1,6 @@
 using OutSystems.ExternalLibraries.SDK;
 
-namespace RFPIngestLib.Structures
+namespace OdcIngest.Structures
 {
     [OSStructure(Description = "One extracted page (PDF page, DOCX logical page or XLSX sheet).")]
     public struct PageRecord

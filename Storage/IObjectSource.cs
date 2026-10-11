@@ -1,4 +1,4 @@
-namespace RFPIngestLib.Storage
+namespace OdcIngest.Storage
 {
     /// <summary>Resolves an object key to a readable local file.</summary>
     public interface IObjectSource

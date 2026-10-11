@@ -1,10 +1,11 @@
-# Builds dist/RFPIngestLib.zip for upload to ODC (zip root holds the DLLs, not a folder).
+# Builds dist/odc-ingest-lib-v$Version.zip for upload to ODC (zip root holds the DLLs, not a folder).
+param([string]$Version = "0.2.0")
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$proj = Join-Path $here 'RFPIngestLib.csproj'
+$proj = Join-Path $here 'OdcIngestLib.csproj'
 $publish = Join-Path $here 'bin/Release/net10.0/linux-x64/publish'
 $dist = Join-Path $here 'dist'
-$zip = Join-Path $dist 'RFPIngestLib.zip'
+$zip = Join-Path $dist "odc-ingest-lib-v$Version.zip"
 
 if (Test-Path $publish) { Remove-Item $publish -Recurse -Force }
 dotnet publish $proj -c Release -r linux-x64 --self-contained false

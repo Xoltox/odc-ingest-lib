@@ -4,16 +4,16 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Logging;
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.Storage
+namespace OdcIngest.Storage
 {
     /// <summary>Downloads the object to a temp file, cached by SHA-256(bucket/key) plus ETag.</summary>
     public sealed class S3ObjectSource : IObjectSource
     {
         public const long MaxObjectBytes = 150L * 1024 * 1024;
         public static readonly TimeSpan CacheMaxAge = TimeSpan.FromMinutes(15);
-        private const string Prefix = "rfping-";
+        private const string Prefix = "odcing-";
 
         private readonly StorageConnection _connection;
         private readonly ILogger _logger;
@@ -28,7 +28,7 @@ namespace RFPIngestLib.Storage
 
         public string GetLocalPath(string objectKey)
         {
-            if (string.IsNullOrWhiteSpace(objectKey)) throw new InvalidOperationException("RFPIngest: object key required");
+            if (string.IsNullOrWhiteSpace(objectKey)) throw new InvalidOperationException("OdcIngest: object key required");
             CleanOld();
 
             using var client = CreateClient();
@@ -39,10 +39,10 @@ namespace RFPIngestLib.Storage
             }
             catch (AmazonServiceException ex)
             {
-                throw new InvalidOperationException($"RFPIngest: object not readable ({ex.ErrorCode ?? ex.GetType().Name})");
+                throw new InvalidOperationException($"OdcIngest: object not readable ({ex.ErrorCode ?? ex.GetType().Name})");
             }
 
-            if (meta.ContentLength > MaxObjectBytes) throw new InvalidOperationException("RFPIngest: object too large");
+            if (meta.ContentLength > MaxObjectBytes) throw new InvalidOperationException("OdcIngest: object too large");
 
             var name = Prefix + Hex(SHA256.HashData(Encoding.UTF8.GetBytes(_connection.Bucket + "/" + objectKey)))
                        + "-" + Hex(SHA256.HashData(Encoding.UTF8.GetBytes(meta.ETag ?? "noetag"))).Substring(0, 16) + ".bin";
@@ -51,7 +51,7 @@ namespace RFPIngestLib.Storage
             if (File.Exists(path))
             {
                 File.SetLastWriteTimeUtc(path, DateTime.UtcNow);
-                _logger.LogInformation("RFPIngest: temp cache hit key={ObjectKey} bytes={Bytes}", objectKey, meta.ContentLength);
+                _logger.LogInformation("OdcIngest: temp cache hit key={ObjectKey} bytes={Bytes}", objectKey, meta.ContentLength);
                 return path;
             }
 
@@ -70,13 +70,13 @@ namespace RFPIngestLib.Storage
             }
             catch (AmazonServiceException ex)
             {
-                throw new InvalidOperationException($"RFPIngest: download failed ({ex.ErrorCode ?? ex.GetType().Name})");
+                throw new InvalidOperationException($"OdcIngest: download failed ({ex.ErrorCode ?? ex.GetType().Name})");
             }
             finally
             {
                 try { if (File.Exists(part)) File.Delete(part); } catch (IOException) { }
             }
-            _logger.LogInformation("RFPIngest: downloaded key={ObjectKey} bytes={Bytes} elapsedMs={ElapsedMs}", objectKey, meta.ContentLength, sw.ElapsedMilliseconds);
+            _logger.LogInformation("OdcIngest: downloaded key={ObjectKey} bytes={Bytes} elapsedMs={ElapsedMs}", objectKey, meta.ContentLength, sw.ElapsedMilliseconds);
             return path;
         }
 
@@ -89,7 +89,7 @@ namespace RFPIngestLib.Storage
             while ((n = src.Read(buf, 0, buf.Length)) > 0)
             {
                 total += n;
-                if (total > max) throw new InvalidOperationException("RFPIngest: object too large");
+                if (total > max) throw new InvalidOperationException("OdcIngest: object too large");
                 dst.Write(buf, 0, n);
             }
             return total;
@@ -99,9 +99,9 @@ namespace RFPIngestLib.Storage
         internal static void ValidateUrl(StorageConnection c)
         {
             if (!Uri.TryCreate(c.ServiceUrl, UriKind.Absolute, out var u) || (u.Scheme != Uri.UriSchemeHttps && u.Scheme != Uri.UriSchemeHttp))
-                throw new InvalidOperationException("RFPIngest: ServiceUrl must be an absolute http(s) URL");
+                throw new InvalidOperationException("OdcIngest: ServiceUrl must be an absolute http(s) URL");
             if (u.Scheme == Uri.UriSchemeHttp && !c.AllowInsecureHttp && !u.IsLoopback)
-                throw new InvalidOperationException("RFPIngest: ServiceUrl must be https (http only for localhost or when AllowInsecureHttp is set)");
+                throw new InvalidOperationException("OdcIngest: ServiceUrl must be https (http only for localhost or when AllowInsecureHttp is set)");
         }
 
         private AmazonS3Client CreateClient()

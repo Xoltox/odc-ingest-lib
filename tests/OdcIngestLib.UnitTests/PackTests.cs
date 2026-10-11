@@ -1,9 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using ClosedXML.Excel;
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.UnitTests
+namespace OdcIngest.UnitTests
 {
     public class PackTests
     {

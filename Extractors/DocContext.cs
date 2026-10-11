@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 
-namespace RFPIngestLib.Extractors
+namespace OdcIngest.Extractors
 {
     /// <summary>Hard deadline shared by every extractor. Check() runs every page and every N rows.</summary>
     public sealed class DocContext
@@ -18,7 +18,7 @@ namespace RFPIngestLib.Extractors
 
         public TimeSpan Remaining => _limit - _sw.Elapsed;
 
-        public static InvalidOperationException Timeout() => new("RFPIngest: E_TIMEOUT hard time limit reached");
+        public static InvalidOperationException Timeout() => new("OdcIngest: E_TIMEOUT hard time limit reached");
 
         public void Check()
         {

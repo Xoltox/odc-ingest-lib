@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/Xoltox/odc-ingest-lib)](https://github.com/Xoltox/odc-ingest-lib/releases)
 
-`odc-ingest-lib` is an ODC External Logic library (the assembly and OutSystems interface are named `RFPIngestLib`). Your ODC app hands it an S3 connection and an object key; it returns page text as Markdown, in bounded batches that fit the ODC action limits. It is built to be fed untrusted documents.
+`odc-ingest-lib` is an ODC External Logic library (the assembly and OutSystems interface are named `OdcIngestLib`). Your ODC app hands it an S3 connection and an object key; it returns page text as Markdown, in bounded batches that fit the ODC action limits. It is built to be fed untrusted documents.
 
 ## Features
 
@@ -23,7 +23,7 @@
   - Encrypted and corrupt PDFs fail with explicit error codes.
   - DOCX external entities are not resolved; DOCX headers, footers, footnotes and endnotes are excluded.
   - Formulas are never evaluated; the value stored in the file is used.
-- **No text leakage in errors or logs**: errors are `InvalidOperationException` with an `RFPIngest:` prefix and never contain document text; logs carry object key, page range, byte counts and elapsed ms only.
+- **No text leakage in errors or logs**: errors are `InvalidOperationException` with an `OdcIngest:` prefix and never contain document text; logs carry object key, page range, byte counts and elapsed ms only.
 - Pages without a text layer return empty `Markdown` and `HasTextLayer = false`. There is no OCR.
 
 ## Exposed actions
@@ -44,7 +44,7 @@
 
 ## Error codes
 
-Errors surface as `RFPIngest: <CODE> <detail>`.
+Errors surface as `OdcIngest: <CODE> <detail>`.
 
 | Code | Raised when |
 |---|---|
@@ -54,7 +54,7 @@ Errors surface as `RFPIngest: <CODE> <detail>`.
 | `E_PDF_ENCRYPTED` | The PDF is password-protected. |
 | `E_PDF_CORRUPT` | The PDF, its page tree or a page cannot be read. |
 
-Other errors use the plain `RFPIngest:` prefix with a short reason: `object key required`, `object not found`, `object not readable`, `object too large`, `unsupported format`, `not a workbook`, `sheet not found`, `page out of range`, `row out of range`, `download failed`, `could not read document`, and `ServiceUrl` validation failures.
+Other errors use the plain `OdcIngest:` prefix with a short reason: `object key required`, `object not readable (<S3 error code>)` (a missing S3 object surfaces as `object not readable (NoSuchKey)`), `object too large`, `unsupported format`, `not a workbook`, `sheet not found`, `page out of range`, `row out of range`, `download failed`, `could not read document`, and `ServiceUrl` validation failures.
 
 ## Install
 
@@ -102,13 +102,13 @@ Requires the .NET 10 SDK. `global.json` enables the Microsoft.Testing.Platform r
 
 ```
 dotnet build -c Release
-powershell -ExecutionPolicy Bypass -File generate_upload_package.ps1   # dist/RFPIngestLib.zip
+powershell -ExecutionPolicy Bypass -File generate_upload_package.ps1   # dist/odc-ingest-lib-v<version>.zip
 ```
 
 Or by hand:
 
 ```
-dotnet publish RFPIngestLib.csproj -c Release -r linux-x64 --self-contained false
+dotnet publish OdcIngestLib.csproj -c Release -r linux-x64 --self-contained false
 ```
 
 then zip the contents of the publish folder flat (not the folder itself).
@@ -116,8 +116,8 @@ then zip the contents of the publish folder flat (not the folder itself).
 ## Testing
 
 ```
-dotnet test --project tests/RFPIngestLib.UnitTests
-dotnet test --project tests/RFPIngestLib.IntegrationTests
+dotnet test --project tests/OdcIngestLib.UnitTests
+dotnet test --project tests/OdcIngestLib.IntegrationTests
 ```
 
 The unit tests need no network. They use generated adversarial documents (zip bombs, hidden rows, XXE, corrupt and encrypted PDFs) and three fictional sample RFQ packs in `tests/fixtures/rfq-packs`.
@@ -126,13 +126,13 @@ Integration tests talk to a real S3-compatible bucket and **skip unless these en
 
 | Variable | Meaning |
 |---|---|
-| `RFPINGEST_IT_SERVICEURL` | S3 endpoint URL |
-| `RFPINGEST_IT_BUCKET` | Bucket name |
-| `RFPINGEST_IT_ACCESSKEY` | Access key |
-| `RFPINGEST_IT_SECRETKEY` | Secret key |
-| `RFPINGEST_IT_REGION` | Optional, default `us-east-1` |
+| `ODCINGEST_IT_SERVICEURL` | S3 endpoint URL |
+| `ODCINGEST_IT_BUCKET` | Bucket name |
+| `ODCINGEST_IT_ACCESSKEY` | Access key |
+| `ODCINGEST_IT_SECRETKEY` | Secret key |
+| `ODCINGEST_IT_REGION` | Optional, default `us-east-1` |
 
-The tests upload the sample packs under `test/rfp/it-<guid>/` and delete them afterwards. Never commit credentials.
+The tests upload the sample packs under `test/odc-ingest/it-<guid>/` and delete them afterwards. Never commit credentials.
 
 ## Security notes
 
@@ -151,7 +151,7 @@ The tests upload the sample packs under `test/rfp/it-<guid>/` and delete them af
 | AWSSDK.S3 | 4.0.104.1 | Apache-2.0 |
 | Microsoft.Extensions.Logging.Abstractions | 10.0.12 | MIT |
 | OutSystems.ExternalLibraries.SDK | 1.7.0 | BSD-3-Clause |
-| SixLabors.Fonts (transitive) | 1.0.0 | Apache-2.0 |
+| SixLabors.Fonts (direct, pinned) | 1.0.0 | Apache-2.0 |
 
 Other transitive packages (AWSSDK.Core, ClosedXML.Parser, DocumentFormat.OpenXml.Framework, ExcelNumberFormat, RBush.Signed, System.IO.Packaging, Microsoft.Extensions.DependencyInjection.Abstractions) are Apache-2.0 or MIT. All are compatible with distributing this library under MIT.
 

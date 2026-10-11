@@ -1,8 +1,8 @@
 using OutSystems.ExternalLibraries.SDK;
 
-namespace RFPIngestLib.Structures
+namespace OdcIngest.Structures
 {
-    [OSStructure(Description = "S3-compatible bucket connection..")]
+    [OSStructure(Description = "S3-compatible bucket connection: endpoint, region, credentials and bucket that the library reads documents from.")]
     public struct StorageConnection
     {
         [OSStructureField(Description = "Endpoint URL, e.g. https://s3.example.com", IsMandatory = true)]

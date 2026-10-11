@@ -1,11 +1,11 @@
 using System.Text;
 using System.Text.RegularExpressions;
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Exceptions;
 
-namespace RFPIngestLib.Extractors
+namespace OdcIngest.Extractors
 {
     public sealed class PdfExtractor : IDocumentExtractor
     {
@@ -19,20 +19,20 @@ namespace RFPIngestLib.Extractors
                 var doc = ctx.Run(() => PdfDocument.Open(path));
                 int count;
                 try { count = doc.NumberOfPages; }
-                catch (Exception) { doc.Dispose(); throw new InvalidOperationException("RFPIngest: E_PDF_CORRUPT unreadable page tree"); }
+                catch (Exception) { doc.Dispose(); throw new InvalidOperationException("OdcIngest: E_PDF_CORRUPT unreadable page tree"); }
                 return new Session(doc, count, ctx);
             }
-            catch (InvalidOperationException ex) when (ex.Message.StartsWith("RFPIngest:", StringComparison.Ordinal))
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("OdcIngest:", StringComparison.Ordinal))
             {
                 throw;
             }
             catch (PdfDocumentEncryptedException)
             {
-                throw new InvalidOperationException("RFPIngest: E_PDF_ENCRYPTED password-protected PDF is not supported");
+                throw new InvalidOperationException("OdcIngest: E_PDF_ENCRYPTED password-protected PDF is not supported");
             }
             catch (Exception)
             {
-                throw new InvalidOperationException("RFPIngest: E_PDF_CORRUPT unreadable PDF");
+                throw new InvalidOperationException("OdcIngest: E_PDF_CORRUPT unreadable PDF");
             }
         }
 
@@ -59,13 +59,13 @@ namespace RFPIngestLib.Extractors
                 {
                     return _ctx.Run(() => BuildPage(n, _doc.GetPage(n)));
                 }
-                catch (InvalidOperationException ex) when (ex.Message.StartsWith("RFPIngest:", StringComparison.Ordinal))
+                catch (InvalidOperationException ex) when (ex.Message.StartsWith("OdcIngest:", StringComparison.Ordinal))
                 {
                     throw;
                 }
                 catch (Exception)
                 {
-                    throw new InvalidOperationException("RFPIngest: E_PDF_CORRUPT unreadable page");
+                    throw new InvalidOperationException("OdcIngest: E_PDF_CORRUPT unreadable page");
                 }
             }
 

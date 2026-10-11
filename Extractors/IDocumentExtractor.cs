@@ -1,6 +1,6 @@
-using RFPIngestLib.Structures;
+using OdcIngest.Structures;
 
-namespace RFPIngestLib.Extractors
+namespace OdcIngest.Extractors
 {
     /// <summary>An opened document: one open serves the page count and the page extraction.</summary>
     public interface IDocumentSession : IDisposable

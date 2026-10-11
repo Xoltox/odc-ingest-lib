@@ -2,24 +2,24 @@ using System.Text.Json;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using RFPIngestLib.Implementations;
-using RFPIngestLib.Storage;
-using RFPIngestLib.Structures;
-using RFPIngestLib.UnitTests;
+using OdcIngest.Implementations;
+using OdcIngest.Storage;
+using OdcIngest.Structures;
+using OdcIngest.UnitTests;
 
-namespace RFPIngestLib.IntegrationTests
+namespace OdcIngest.IntegrationTests
 {
     /// <summary>
     /// Gated on environment variables (never put values in the repo):
-    ///   RFPINGEST_IT_SERVICEURL, RFPINGEST_IT_BUCKET, RFPINGEST_IT_ACCESSKEY, RFPINGEST_IT_SECRETKEY,
-    ///   optional RFPINGEST_IT_REGION (default us-east-1).
-    /// Uploads the three sample packs under test/rfp/it-&lt;guid&gt;/ and deletes them afterwards.
+    ///   ODCINGEST_IT_SERVICEURL, ODCINGEST_IT_BUCKET, ODCINGEST_IT_ACCESSKEY, ODCINGEST_IT_SECRETKEY,
+    ///   optional ODCINGEST_IT_REGION (default us-east-1).
+    /// Uploads the three sample packs under test/odc-ingest/it-&lt;guid&gt;/ and deletes them afterwards.
     /// </summary>
     public sealed class BucketFixture : IAsyncLifetime
     {
         public StorageConnection? Conn { get; private set; }
-        public string Prefix { get; } = "test/rfp/it-" + Guid.NewGuid().ToString("N") + "/";
-        public string TempDir { get; } = Path.Combine(Path.GetTempPath(), "rfping-it-" + Guid.NewGuid().ToString("N"));
+        public string Prefix { get; } = "test/odc-ingest/it-" + Guid.NewGuid().ToString("N") + "/";
+        public string TempDir { get; } = Path.Combine(Path.GetTempPath(), "odcing-it-" + Guid.NewGuid().ToString("N"));
         private readonly List<string> _keys = new();
 
         public static string? Env(string n) { var v = Environment.GetEnvironmentVariable(n); return string.IsNullOrWhiteSpace(v) ? null : v; }
@@ -35,13 +35,13 @@ namespace RFPIngestLib.IntegrationTests
 
         public async ValueTask InitializeAsync()
         {
-            var url = Env("RFPINGEST_IT_SERVICEURL"); var bucket = Env("RFPINGEST_IT_BUCKET");
-            var ak = Env("RFPINGEST_IT_ACCESSKEY"); var sk = Env("RFPINGEST_IT_SECRETKEY");
+            var url = Env("ODCINGEST_IT_SERVICEURL"); var bucket = Env("ODCINGEST_IT_BUCKET");
+            var ak = Env("ODCINGEST_IT_ACCESSKEY"); var sk = Env("ODCINGEST_IT_SECRETKEY");
             if (url == null || bucket == null || ak == null || sk == null) return;
             var conn = new StorageConnection
             {
                 ServiceUrl = url, Bucket = bucket, AccessKey = ak, SecretKey = sk,
-                Region = Env("RFPINGEST_IT_REGION") ?? "us-east-1", ForcePathStyle = true, AllowInsecureHttp = true
+                Region = Env("ODCINGEST_IT_REGION") ?? "us-east-1", ForcePathStyle = true, AllowInsecureHttp = true
             };
             Directory.CreateDirectory(TempDir);
             using var client = Client(conn);
@@ -73,7 +73,7 @@ namespace RFPIngestLib.IntegrationTests
             try { if (Directory.Exists(TempDir)) Directory.Delete(TempDir, true); } catch (IOException) { }
         }
 
-        public RFPIngestLibImpl NewLib(ListLogger logger) =>
+        public OdcIngestLibImpl NewLib(ListLogger logger) =>
             new(logger, c => new S3ObjectSource(c, logger, TempDir));
 
         public string Key(string pack, string doc) => Prefix + pack + "/" + Path.GetFileName(Fixtures.DocPath(pack, doc));
@@ -86,7 +86,7 @@ namespace RFPIngestLib.IntegrationTests
 
         private StorageConnection Require()
         {
-            if (_fx.Conn is not { } c) { Assert.Skip("RFPINGEST_IT_* environment variables not set"); throw new InvalidOperationException(); }
+            if (_fx.Conn is not { } c) { Assert.Skip("ODCINGEST_IT_* environment variables not set"); throw new InvalidOperationException(); }
             return c;
         }
 

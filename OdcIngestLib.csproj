@@ -4,14 +4,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OutputType>Library</OutputType>
-    <RootNamespace>RFPIngestLib</RootNamespace>
-    <AssemblyName>RFPIngestLib</AssemblyName>
+    <RootNamespace>OdcIngest</RootNamespace>
+    <AssemblyName>OdcIngestLib</AssemblyName>
+    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Interfaces/**/*.cs;Implementations/**/*.cs;Structures/**/*.cs;Extractors/**/*.cs;Storage/**/*.cs" />
-    <EmbeddedResource Include="Resources/icon.png" LogicalName="RFPIngestLib.Resources.icon.png" />
+    <EmbeddedResource Include="Resources/icon.png" LogicalName="OdcIngest.Resources.icon.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="OutSystems.ExternalLibraries.SDK" Version="1.7.0" />
