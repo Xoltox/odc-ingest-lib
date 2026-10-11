@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "AWSSDK.S3": {
+        "type": "Direct",
+        "requested": "[4.0.104.1, )",
+        "resolved": "4.0.104.1",
+        "contentHash": "syEbfUR1Qjy9WS0fmg5MWOq0aGghq+pBIyrvDP3BFLc5K2OITxMiwbPkZhEJeAq8SWRn2bfVaWWmNLp8hS9VwQ==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.102.8, 5.0.0)"
+        }
+      },
+      "ClosedXML": {
+        "type": "Direct",
+        "requested": "[0.105.1, )",
+        "resolved": "0.105.1",
+        "contentHash": "X1ruIP9h2FBEK7jmO0peq3s6/Zqt5ve5a9f9kn6WUjdsUWvGbQlqxuGLz822xuFLlmnSeAfWFTGeX/tZlmAt+g==",
+        "dependencies": {
+          "ClosedXML.Parser": "2.0.0",
+          "DocumentFormat.OpenXml": "[3.1.1, 4.0.0)",
+          "ExcelNumberFormat": "1.1.0",
+          "RBush.Signed": "4.0.0",
+          "SixLabors.Fonts": "[1.0.0, 3.0.0)"
+        }
+      },
+      "DocumentFormat.OpenXml": {
+        "type": "Direct",
+        "requested": "[3.5.1, )",
+        "resolved": "3.5.1",
+        "contentHash": "zxdOf5VVCe/uNklbRhj8dVBzQGj3DoqkUuqOp9cAZVuN8mNYDjof1lvSQA2OQNr8Ptc9d7pbA7Azq/ReaI3FpA==",
+        "dependencies": {
+          "DocumentFormat.OpenXml.Framework": "3.5.1"
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Direct",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "+24lC4plfbEDNfLAdTV/SWKS7dW+16X4HdydO3R++134kSNTzcbYA4KpR1Hdh6uWisB8Za3AzwyOn+K+NxWIug==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.12"
+        }
+      },
+      "OutSystems.ExternalLibraries.SDK": {
+        "type": "Direct",
+        "requested": "[1.7.0, )",
+        "resolved": "1.7.0",
+        "contentHash": "JWMp/VpZV32Wor9w5UqNO6y+xF5nmOIhuVMWqOrVHKHcqqxZuEYQNehH2T4XnoiHIXCQx2oHKvbqka3Yo/mjbg=="
+      },
+      "PdfPig": {
+        "type": "Direct",
+        "requested": "[0.1.16, )",
+        "resolved": "0.1.16",
+        "contentHash": "qQcbsNMYVY+K5ELptax2S8thNMk0+rSQq3H/KdYj3LLcko8yTCz8y5KIvsKxIyAuTN0ZYNnfsZkM+0EvxTwHVA=="
+      },
+      "SixLabors.Fonts": {
+        "type": "Direct",
+        "requested": "[1.0.0, 2.0.0)",
+        "resolved": "1.0.0",
+        "contentHash": "LFQsCZlV0xlUyXAOMUo5kkSl+8zAQXXbbdwWchtk0B4o7zotZhQsQOcJUELGHdfPfm/xDAsz6hONAuV25bJaAg=="
+      },
+      "AWSSDK.Core": {
+        "type": "Transitive",
+        "resolved": "4.0.102.8",
+        "contentHash": "90B9Skhl+ORbtWNXrrmGdGhGvAfZiPmZafRYrB/xHelZjePIwPvXioqz9UiiF1vo21eDLzTnXh5EC4RjbNWsFQ=="
+      },
+      "ClosedXML.Parser": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "ngTqjYreDYNytG1W5d3ewHsw0ukmmrgV7EKnS4/40rXoYZGt07jrBvo+N+GxT49rcageUMUiprV0jYT4nwVBHQ=="
+      },
+      "DocumentFormat.OpenXml.Framework": {
+        "type": "Transitive",
+        "resolved": "3.5.1",
+        "contentHash": "U5txtc3ORno73xQx9Lf2gWzfaSZnZwKHfLkTAslhlew9lxe5XbUiCt0dY1fHeAf8yRqszUAe5i/+xLC9R/Xfsw==",
+        "dependencies": {
+          "System.IO.Packaging": "10.0.2"
+        }
+      },
+      "ExcelNumberFormat": {
+        "type": "Transitive",
+        "resolved": "1.1.0",
+        "contentHash": "R3BVHPs9O+RkExbZYTGT0+9HLbi8ZrNij1Yziyw6znd3J7P3uoIR07uwTLGOogtz1p6+0sna66eBoXu7tBiVQA=="
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.12",
+        "contentHash": "9/qymSh7hVDMGTGwrLz8MRp5zRyXy9adGDOs4HwRdnLil3oZGYuWeZjbmHgCQ9BL1qBroVfgUK3U/nb61617Cw=="
+      },
+      "RBush.Signed": {
+        "type": "Transitive",
+        "resolved": "4.0.0",
+        "contentHash": "aP5KQxL5RnFNGW1f0euYVBfCatkLw5iEzMRJcXKq8LWWP4Cp3+qoSq1tDDL2vvJ2rM0ychmVMa2VaEKLS6uX4w=="
+      },
+      "System.IO.Packaging": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "JTpM4z0wpoIHHDvlCU27HsXo+zVnpWib94HXQpzzr+jc/P9NYf4w353AK4MXyGq/grm1mbLi7eXsOsDU8sGmNg=="
+      }
+    }
+  }
+}
